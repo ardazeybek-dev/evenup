@@ -1,0 +1,11 @@
+# Zero-decimal currency: yen has no cents, so every split is whole yen.
+
+group "Tokyo weekend"
+currency JPY
+
+people ken yui sota
+
+"Ramen"          ken paid 3_100
+"Shinkansen"     yui paid 41_520
+"Hotel"          sota paid 58_000 split shares ken:1 yui:1 sota:2
+"Onsen"          ken paid 7_500 for yui sota

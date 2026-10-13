@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>evenup playground</title>
+<meta name="description" content="Settle shared expenses in the fewest possible transfers.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231c1a15'/%3E%3Cpath d='M9 12h14M9 20h14' stroke='%23f5f2ea' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/*THEME*/
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 var(--font-ui);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+button,select{font:inherit;color:inherit}
+.top{display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--surface)}
+.logo{display:flex;align-items:center;gap:10px;font:600 21px/1 var(--font-display);letter-spacing:-.01em}
+.logo i{width:26px;height:26px;border-radius:7px;background:var(--ink);display:grid;place-items:center}
+.logo i:before{content:"";width:13px;height:9px;border-top:2.5px solid var(--bg);border-bottom:2.5px solid var(--bg)}
+.tag{color:var(--muted);font-size:13px}
+.sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:9px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:13px;font-weight:500;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select.btn{padding-right:28px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 15px,calc(100% - 10px) 15px;background-size:5px 5px;background-repeat:no-repeat}
+main{flex:1;display:grid;grid-template-columns:minmax(380px,46%) 1fr;min-height:0}
+.editor{display:flex;flex-direction:column;border-right:1px solid var(--line);min-height:0;background:var(--surface)}
+.ehead{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);font:600 11.5px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.code{flex:1;display:flex;min-height:0;position:relative;font:13px/21px var(--font-mono)}
+.gutter{padding:14px 10px 14px 14px;text-align:right;color:var(--muted);opacity:.6;user-select:none;overflow:hidden;min-width:46px}
+.gutter div.err{color:var(--neg);opacity:1;font-weight:700}
+textarea{flex:1;border:0;resize:none;padding:14px 16px 14px 6px;background:transparent;color:var(--ink);font:inherit;white-space:pre;overflow:auto;tab-size:4}
+textarea:focus{outline:none}
+.diag{border-top:1px solid var(--line);max-height:30%;overflow:auto;font:12.5px/1.5 var(--font-mono)}
+.diag div{padding:8px 16px;border-bottom:1px solid var(--line);color:var(--neg);cursor:pointer}
+.diag div:hover{background:var(--neg-soft)}
+.diag b{color:var(--ink)}
+.out{overflow:auto;padding:26px 30px 60px;min-height:0}
+.title{font:600 30px/1.1 var(--font-display);margin:0}
+.meta{color:var(--muted);margin:6px 0 22px;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:26px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 16px}
+.stat .k{font-size:12px;color:var(--muted)}
+.stat .v{font:600 22px/1.25 var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stat.hl{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stat.hl .k{color:color-mix(in srgb,var(--bg) 70%,transparent)}
+h2{font:600 18px var(--font-display);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.badge{font:600 10.5px/1 var(--font-mono);padding:5px 8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.badge.ok{background:var(--pos-soft);border-color:transparent;color:var(--pos)}
+.tx{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:26px;overflow:hidden}
+.row{display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:0}
+.who{display:flex;align-items:center;gap:9px;font-weight:600;min-width:0}
+.who span:last-child{overflow:hidden;text-overflow:ellipsis}
+.av{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px var(--font-ui);border:2px solid}
+.av.neg{background:var(--neg-soft);border-color:var(--neg)}
+.av.pos{background:var(--pos-soft);border-color:var(--pos)}
+.pays{color:var(--muted);font-size:12px}
+.amt{font:600 16px var(--font-mono);font-variant-numeric:tabular-nums;text-align:right}
+.square{padding:22px;text-align:center;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:3px;background:var(--surface);margin-left:auto}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:6px;font:500 12.5px var(--font-ui);cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.graph{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 18px;margin-bottom:26px}
+.graph svg{max-height:460px}
+.bars{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 18px}
+.bar-row{display:grid;grid-template-columns:110px 1fr 110px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.bar-row:last-child{border-bottom:0}
+.bar{position:relative;height:10px;background:var(--surface-2);border-radius:99px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:99px;transition:width .35s ease,left .35s ease,right .35s ease}
+.bar b{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--muted);opacity:.5}
+.net{font:600 13px var(--font-mono);text-align:right;font-variant-numeric:tabular-nums}
+.net.pos{color:var(--pos)}.net.neg{color:var(--neg)}
+.empty{color:var(--muted);padding:60px 0;text-align:center}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.stale{opacity:.45;transition:opacity .2s}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:minmax(340px,48vh) auto}
+  .editor{border-right:0;border-bottom:1px solid var(--line)}
+  .tag,.hide-sm{display:none}
+  .out{padding:22px 16px 50px}
+  .top{padding:12px 16px;gap:8px;flex-wrap:wrap}
+  .row{grid-template-columns:1fr auto;}
+  .pays{display:none}
+  .bar-row{grid-template-columns:80px 1fr 90px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo"><i aria-hidden="true"></i>evenup</div>
+  <span class="tag">split shared costs · settle in the fewest transfers</span>
+  <span class="sp"></span>
+  <select id="examples" class="btn" aria-label="Load an example"></select>
+  <button class="btn hide-sm" id="share" title="Copy a link that contains this ledger">Share</button>
+  <button class="btn" id="theme" aria-label="Toggle dark mode">◐</button>
+  <button class="btn primary" id="download">Download report</button>
+</header>
+<main>
+  <section class="editor" aria-label="Ledger editor">
+    <div class="ehead"><span>ledger.evenup</span><span id="status">…</span></div>
+    <div class="code">
+      <div class="gutter" id="gutter" aria-hidden="true"></div>
+      <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Ledger source"></textarea>
+    </div>
+    <div class="diag" id="diag" hidden></div>
+  </section>
+  <section class="out" id="out" aria-live="polite"><div class="empty">Loading…</div></section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const src = $("src"), gutter = $("gutter"), out = $("out"), diag = $("diag"), status = $("status");
+  let view = "after", last = null, timer = 0, seq = 0;
+
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const initial = (n) => esc((n || "?")[0].toUpperCase());
+  const toast = (msg) => { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 1800); };
+
+  // theme: remembered per browser, falls back to the OS preference
+  const setTheme = (t) => { if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; };
+  try { setTheme(localStorage.getItem("evenup-theme")); } catch {}
+  $("theme").onclick = () => {
+    const dark = document.documentElement.dataset.theme
+      ? document.documentElement.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    setTheme(next);
+    try { localStorage.setItem("evenup-theme", next); } catch {}
+  };
+
+  // ledger <-> URL hash (UTF-8 safe base64url)
+  const encode = (s) => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const decode = (s) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)));
+
+  function renderGutter(errLines) {
+    const n = src.value.split("\n").length;
+    let html = "";
+    for (let i = 1; i <= n; i++) html += `<div${errLines.has(i) ? ' class="err"' : ""}>${i}</div>`;
+    gutter.innerHTML = html;
+    gutter.scrollTop = src.scrollTop;
+  }
+  src.addEventListener("scroll", () => { gutter.scrollTop = src.scrollTop; });
+
+  function goToLine(line) {
+    const lines = src.value.split("\n");
+    const start = lines.slice(0, line - 1).reduce((a, l) => a + l.length + 1, 0);
+    src.focus();
+    src.setSelectionRange(start, start + (lines[line - 1] || "").length);
+    src.scrollTop = Math.max(0, (line - 4) * 21);
+  }
+
+  function showErrors(errors) {
+    status.textContent = `${errors.length} error${errors.length > 1 ? "s" : ""}`;
+    status.style.color = "var(--neg)";
+    diag.hidden = false;
+    diag.innerHTML = errors.map((e) => `<div data-line="${e.line}"><b>${e.line}:${e.column}</b> ${esc(e.message)}</div>`).join("");
+    diag.querySelectorAll("div").forEach((d) => d.onclick = () => goToLine(+d.dataset.line));
+    renderGutter(new Set(errors.map((e) => e.line)));
+    out.classList.add("stale");
+  }
+
+  function render(r) {
+    last = r;
+    status.textContent = "✓ balanced";
+    status.style.color = "var(--pos)";
+    diag.hidden = true;
+    renderGutter(new Set());
+    out.classList.remove("stale");
+    const expenses = r.entries.filter((e) => e.kind === "expense").length;
+    const saved = r.plan.naiveTransfers - r.plan.transfers;
+    const badge = (r.plan.method === "optimal" ? '<span class="badge ok">proven minimal</span>' : `<span class="badge">${r.plan.method}</span>`)
+      + (r.plan.greedyTransfers > r.plan.transfers ? `<span class="badge">greedy would need ${r.plan.greedyTransfers}</span>` : "");
+    const max = Math.max(1, ...r.people.map((p) => Math.abs(p.net.minor)));
+    out.innerHTML = `
+      <h1 class="title">${esc(r.group)}</h1>
+      <div class="meta">${r.period ? `<span>${esc(r.period)}</span>` : ""}<span>${r.people.length} people</span><span>${expenses} expenses</span><span>${esc(r.currency)}</span></div>
+      <div class="stats">
+        <div class="stat"><div class="k">Total spent</div><div class="v">${esc(r.totalSpend.text)}</div></div>
+        <div class="stat"><div class="k">Direct debts</div><div class="v">${r.plan.naiveTransfers}</div></div>
+        <div class="stat hl"><div class="k">Transfers${saved > 0 ? ` · ${saved} saved` : ""}</div><div class="v">${r.plan.transfers}</div></div>
+      </div>
+      <h2>Settle up ${badge}</h2>
+      <div class="tx">${r.transfers.length ? r.transfers.map((t) => `
+        <div class="row">
+          <div class="who"><span class="av neg">${initial(t.from)}</span><span>${esc(t.from)}</span></div>
+          <span class="pays">pays</span>
+          <div class="who"><span class="av pos">${initial(t.to)}</span><span>${esc(t.to)}</span></div>
+          <div class="amt">${esc(t.amount.text)}</div>
+        </div>`).join("") : '<div class="square">Everyone is square 🎉</div>'}</div>
+      <h2>Debt graph
+        <span class="seg" role="group" aria-label="Graph view">
+          <button data-v="after" aria-pressed="${view === "after"}">evenup plan</button>
+          <button data-v="before" aria-pressed="${view === "before"}">direct debts</button>
+        </span></h2>
+      <div class="graph">${view === "after" ? r.svg.after : r.svg.before}</div>
+      <h2>Balances</h2>
+      <div class="bars">${r.people.map((p) => {
+        const pct = (50 * Math.abs(p.net.minor)) / max;
+        const bar = p.net.minor >= 0 ? `left:50%;width:${pct}%;background:var(--pos)` : `right:50%;width:${pct}%;background:var(--neg)`;
+        const cls = p.net.minor > 0 ? "pos" : p.net.minor < 0 ? "neg" : "";
+        return `<div class="bar-row"><div class="who"><span class="av ${p.net.minor >= 0 ? "pos" : "neg"}">${initial(p.name)}</span><span>${esc(p.name)}</span></div>
+          <div class="bar"><b></b><i style="${bar}"></i></div><div class="net ${cls}">${p.net.minor > 0 ? "+" : ""}${esc(p.net.text)}</div></div>`;
+      }).join("")}</div>`;
+    out.querySelectorAll(".seg button").forEach((b) => b.onclick = () => { view = b.dataset.v; render(last); });
+  }
+
+  async function settle() {
+    const mine = ++seq;
+    try {
+      const res = await fetch("api/settle", { method: "POST", headers: { "content-type": "text/plain" }, body: src.value });
+      const data = await res.json();
+      if (mine !== seq) return;
+      if (res.ok) render(data); else showErrors(data.errors || [{ line: 0, column: 0, message: "request failed" }]);
+    } catch (e) {
+      if (mine === seq) showErrors([{ line: 0, column: 0, message: "cannot reach the evenup server" }]);
+    }
+  }
+
+  src.addEventListener("input", () => { renderGutter(new Set()); clearTimeout(timer); timer = setTimeout(settle, 250); });
+  src.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") { e.preventDefault(); document.execCommand("insertText", false, "    "); }
+  });
+
+  $("share").onclick = async () => {
+    history.replaceState(null, "", "#src=" + encode(src.value));
+    try { await navigator.clipboard.writeText(location.href); toast("Link copied"); } catch { toast("Link is in the address bar"); }
+  };
+
+  $("download").onclick = async () => {
+    const res = await fetch("api/report", { method: "POST", headers: { "content-type": "text/plain" }, body: src.value });
+    if (!res.ok) { toast("Fix the errors first"); return; }
+    const url = URL.createObjectURL(await res.blob());
+    const a = Object.assign(document.createElement("a"), { href: url, download: "evenup-report.html" });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  async function loadExample(name) {
+    const res = await fetch("api/examples/" + encodeURIComponent(name));
+    if (res.ok) { src.value = await res.text(); renderGutter(new Set()); settle(); }
+  }
+
+  (async () => {
+    const names = await (await fetch("api/examples")).json();
+    const sel = $("examples");
+    sel.innerHTML = names.map((n) => `<option value="${esc(n)}">${esc(n.replace(/-/g, " "))}</option>`).join("");
+    sel.onchange = () => { history.replaceState(null, "", location.pathname); loadExample(sel.value); };
+    const m = location.hash.match(/^#src=(.+)$/);
+    if (m) {
+      try { src.value = decode(m[1]); renderGutter(new Set()); settle(); return; } catch {}
+    }
+    sel.value = names.includes("lisbon-trip") ? "lisbon-trip" : names[0];
+    loadExample(sel.value);
+  })();
+})();
+</script>
+</body>
+</html>

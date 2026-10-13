@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Evenup.Core/Evenup.Core.fsproj" />
+    <Project Path="src/Evenup/Evenup.fsproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Evenup.Tests/Evenup.Tests.fsproj" />
+  </Folder>
+</Solution>

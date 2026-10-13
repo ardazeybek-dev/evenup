@@ -1,0 +1,17 @@
+# Three flatmates, one month. Rent follows room size, bills are split
+# evenly, and someone always forgets they owe for the Wi-Fi.
+
+group "Flat 4B — October"
+currency GBP
+
+people maya jonas priya
+
+2026-10-01 "Rent"             maya paid 2_250.00 split shares maya:14 jonas:11 priya:12
+2026-10-03 "Electricity"      jonas paid 96.42
+2026-10-03 "Wi-Fi"            priya paid 32.00
+2026-10-08 "Cleaning supplies" maya paid 18.75
+2026-10-12 "Big shop"         jonas paid 84.10 split exact maya:30.00 jonas:24.10 priya:30.00
+2026-10-20 "Water"            priya paid 41.07
+2026-10-25 "Takeaway night"   maya paid 46.50 for jonas priya maya
+
+2026-10-15 jonas paid maya 500

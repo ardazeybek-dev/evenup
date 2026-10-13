@@ -1,0 +1,32 @@
+# Six friends, five days in Lisbon. Some paid in dollars, one dinner had a
+# tricky receipt, and a couple of debts were already paid back in cash.
+
+group "Lisbon Trip 2026"
+currency EUR
+rate USD 0.92
+rate GBP 1.17
+
+people alice bob carol dave emma farid
+
+2026-05-01 "Airbnb, 5 nights"        alice paid 1_140.00
+2026-05-01 "Airport taxis"           bob paid 64.80 for alice bob carol
+2026-05-01 "Airport taxis"           dave paid 58.20 for dave emma farid
+2026-05-02 "Pastéis de Belém"        carol paid 27.60
+2026-05-02 "Tram 28 day passes"      emma paid 38.40 USD for alice bob carol dave
+2026-05-02 "Time Out Market dinner"  farid paid 214.70 itemized
+    "Bacalhau"            alice 24.50
+    "Polvo à lagareiro"   bob 29.00
+    "Francesinha"         carol, dave 31.00
+    "Vegan bowl"          emma 17.50
+    "Grilled sardines"    farid 21.00
+    "Two bottles of wine" alice bob carol dave emma farid 58.00
+2026-05-03 "Sintra tour"             dave paid 342.00 split shares alice:1 bob:1 carol:1 dave:1 emma:1 farid:1
+2026-05-03 "Sintra lunch"            alice:40, emma:56.30 paid 96.30
+2026-05-04 "Fado night tickets"      bob paid 180.00 split exact alice:45 bob:45 carol:45 farid:45
+2026-05-04 "Groceries"               carol paid 73.45 split percent alice:20 bob:20 carol:20 dave:20 emma:10 farid:10
+2026-05-05 "Surf lesson"             emma paid 150 GBP for dave emma farid
+2026-05-05 "Refund: cancelled boat"  dave paid -60.00 for carol dave
+
+# already settled in cash
+2026-05-05 carol paid alice 100
+2026-05-06 farid paid dave 40

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, arda]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet build -c Release
+      - run: dotnet test -c Release --no-build
+      - name: Settle every example
+        shell: bash
+        run: |
+          for f in examples/*.evenup; do
+            dotnet run -c Release --no-build --project src/Evenup -- settle "$f" --no-color
+          done
+      - name: Errors exit with code 1
+        shell: bash
+        run: |
+          set +e
+          printf 'people a b\na paid 1.234\n' | dotnet run -c Release --no-build --project src/Evenup -- check -
+          test $? -eq 1
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t evenup .
+      - name: Smoke-test the API
+        run: |
+          docker run -d -p 8080:8080 --name evenup evenup
+          for i in $(seq 1 30); do curl -sf localhost:8080/api/health && break; sleep 1; done
+          curl -sf -X POST --data-binary @examples/greedy-trap.evenup localhost:8080/api/settle | grep -q '"transfers":3'

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>evenup</AssemblyName>
+    <RootNamespace>Evenup</RootNamespace>
+    <Version>0.1.0</Version>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>evenup</ToolCommandName>
+    <PackageId>evenup</PackageId>
+    <Description>Settle shared expenses in the fewest possible transfers.</Description>
+    <Authors>Arda Zeybek</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/ardazeybek-dev/evenup</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Config.fs" />
+    <Compile Include="Terminal.fs" />
+    <Compile Include="Assets.fs" />
+    <Compile Include="Server.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="playground\index.html" LogicalName="playground/index.html" />
+    <EmbeddedResource Include="..\..\examples\*.evenup" LogicalName="examples/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evenup.Core\Evenup.Core.fsproj" />
+  </ItemGroup>
+
+</Project>

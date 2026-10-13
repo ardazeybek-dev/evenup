@@ -1,0 +1,10 @@
+# Two separate circles of friends who happen to share one ledger.
+# The naive "largest debtor pays largest creditor" rule needs 4 transfers.
+# evenup finds that each circle can settle on its own: 3 transfers.
+
+group "Greedy trap"
+currency EUR
+people ana ben cleo dan eli
+
+ana paid 500 split exact ben:300 cleo:200
+dan paid 400 split exact eli:400

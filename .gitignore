@@ -1,0 +1,25 @@
+# build output
+bin/
+obj/
+out/
+publish/
+site/
+*.nupkg
+
+# local settings and secrets
+.env
+.env.*
+!.env.example
+
+# generated reports
+*.html
+!src/Evenup/playground/index.html
+
+# editors / OS
+.vs/
+.vscode/
+.idea/
+*.user
+.DS_Store
+Thumbs.db
+TestResults/
