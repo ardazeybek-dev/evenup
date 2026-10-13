@@ -42,6 +42,17 @@ let private readBody (ctx: HttpContext) =
 let private errorsDto (ds: Diagnostic list) =
     {| errors = ds |> List.map (fun d -> {| line = d.Line; column = d.Column; message = d.Message |}) |}
 
+/// Reads the ledger from the body; an oversized body becomes a clean 413 instead of a logged crash.
+let private withSource (ctx: HttpContext) (handle: string -> IResult) : Task<IResult> =
+    task {
+        try
+            let! source = readBody ctx
+            return handle source
+        with :? BadHttpRequestException as e ->
+            let diag = { Line = 0; Column = 0; Message = e.Message }
+            return Results.Json(errorsDto [ diag ], json, statusCode = e.StatusCode)
+    }
+
 let private limitFrom (ctx: HttpContext) (fallback: int) =
     match ctx.Request.Query.TryGetValue "exactLimit" with
     | true, v ->
@@ -84,24 +95,18 @@ let start (settings: Config.Settings) =
     |> ignore
 
     app.MapPost("/api/settle", Func<HttpContext, Task<IResult>>(fun ctx ->
-        task {
-            let! source = readBody ctx
+        withSource ctx (fun source ->
             let greedy = ctx.Request.Query.ContainsKey "greedy"
-            return
-                match run (limitFrom ctx settings.ExactLimit) greedy source with
-                | Settled(a, plan) -> Results.Json(Report.toDto a plan true, json)
-                | Invalid ds -> Results.Json(errorsDto ds, json, statusCode = 422)
-        }))
+            match run (limitFrom ctx settings.ExactLimit) greedy source with
+            | Settled(a, plan) -> Results.Json(Report.toDto a plan true, json)
+            | Invalid ds -> Results.Json(errorsDto ds, json, statusCode = 422))))
     |> ignore
 
     app.MapPost("/api/report", Func<HttpContext, Task<IResult>>(fun ctx ->
-        task {
-            let! source = readBody ctx
-            return
-                match run (limitFrom ctx settings.ExactLimit) false source with
-                | Settled(a, plan) -> Results.Content(Report.html Config.version a plan, "text/html; charset=utf-8")
-                | Invalid ds -> Results.Json(errorsDto ds, json, statusCode = 422)
-        }))
+        withSource ctx (fun source ->
+            match run (limitFrom ctx settings.ExactLimit) false source with
+            | Settled(a, plan) -> Results.Content(Report.html Config.version a plan, "text/html; charset=utf-8")
+            | Invalid ds -> Results.Json(errorsDto ds, json, statusCode = 422))))
     |> ignore
 
     let url = sprintf "http://%s:%d" settings.Host settings.Port
